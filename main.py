@@ -6,6 +6,12 @@ class Poligono:
         self.vertices = []
         self.closed = False
 
+    def get_vertices(self):
+        return self.vertices
+
+    def set_vertices(self, vertices):
+        self.vertices = vertices
+
 def clear_points():
     poligono.vertices = []
     poligono.closed = False
@@ -26,9 +32,16 @@ def on_right_click(event):
 def update_canvases():
     canvas_input.delete("all")
     canvas_output.delete("all")
+    #canvas_input.create_line(width/2, 0, width/2, height, fill="red", dash=(4, 4))
+    canvas_input.create_line(0, height/2, width, height/2, fill="red", dash=(4, 4))
+    
+    
+    
+    
     if poligono.vertices:
         canvas_input.create_polygon(poligono.vertices, fill='', outline='blue', width=2)
         if poligono.closed:
+            centralizar_poligono(poligono)
             canvas_output.create_polygon(poligono.vertices, fill='lightblue', outline='blue', width=2)
     update_vertex_list()
 
@@ -37,6 +50,23 @@ def update_vertex_list():
 
 def update_mouse_coordinates(event):
     mouse_coords.set(f"X: {event.x}, Y: {event.y}")
+
+
+def centralizar_poligono(poligono): #SOMAR X
+    vertices = poligono.get_vertices() 
+    x_min = min(v[0] for v in vertices)
+    x_max = max(v[0] for v in vertices)
+    
+    x_centro = (x_min + x_max) / 2
+    
+    vertices = [list(vertex) for vertex in vertices]
+    for i, e in enumerate(vertices):
+        #print(type(vertices[i][0]))
+        #print((vertices[i][0]+2))
+        vertices[i][0] = vertices[i][0] + int(x_centro)
+    
+    vertices = [tuple(vertex) for vertex in vertices]
+    poligono.set_vertices(vertices)
 
 root = tk.Tk()
 root.title("Polygon Drawer")
@@ -66,7 +96,7 @@ mouse_coordinates_label = ttk.Label(sidebar_frame, textvariable=mouse_coords)
 mouse_coordinates_label.pack(side=tk.RIGHT, pady=10, padx=10)
 
 # Plano cartesiano 2D (entrada)
-canvas_input = tk.Canvas(main_frame, width=width, height=height, bg='white')
+canvas_input = tk.Canvas(main_frame, width=width/2, height=height, bg='white')
 canvas_input.pack(side=tk.LEFT, fill=tk.BOTH, expand=False)
 canvas_input.bind("<Button-1>", on_left_click)
 canvas_input.bind("<Button-3>", on_right_click)
